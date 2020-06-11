@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 
 vimdecrypt = "^0.1.3"
+structopt = "0.3"
