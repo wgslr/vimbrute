@@ -1,8 +1,7 @@
-use std::env;
-use std::process;
 use structopt::StructOpt;
 use vimcrypto::cli;
-use vimcrypto::Error;
+
+const PASSWORD: &str = "12345678912345";
 
 fn main() {
     let opts = cli::Params::from_args();

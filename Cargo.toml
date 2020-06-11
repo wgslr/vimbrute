@@ -7,6 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
-vimdecrypt = "^0.1.3"
-structopt = "0.3"
+blowfish = "0.5.0"
+byteorder = "1.3.4"
+clap = "2.31.2"
+failure = "0.1.1"
+generic-array = "0.14.1"
+sha2 = "0.8.2"
+structopt = "0.3.14"
