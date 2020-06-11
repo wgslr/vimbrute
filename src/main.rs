@@ -10,10 +10,6 @@ fn main() {
             print_help(false);
             process::exit(2);
         }
-        _ => {
-            eprintln!("Unexpected error! {:?}", err);
-            process::exit(1);
-        }
     });
 }
 
