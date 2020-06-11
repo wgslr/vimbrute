@@ -1,7 +1,7 @@
 use std::env;
 use std::process;
 use vimcrypto::cli;
-use vimcrypto::cli::Error;
+use vimcrypto::Error;
 
 fn main() {
     let args = cli::Params::new(env::args()).unwrap_or_else(|err| match err {

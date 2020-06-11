@@ -1,12 +1,9 @@
+use super::Error;
+
 #[derive(Debug, PartialEq)]
 pub struct Params {
     pub encrypted_file: String,
     pub password: String,
-}
-
-#[derive(Debug)]
-pub enum Error {
-    ArgsError,
 }
 
 impl Params {
@@ -42,8 +39,10 @@ mod test {
     fn parse_good_args() {
         let args: Vec<String> = vec![
             "program".to_string(),
-            "-f".to_string(), "file".to_string(),
-            "-p".to_string(), "pass".to_string(),
+            "-f".to_string(),
+            "file".to_string(),
+            "-p".to_string(),
+            "pass".to_string(),
         ];
         assert_eq!(
             Params {
