@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Params {
     pub encrypted_file: String,
     pub password: String,
@@ -31,5 +31,26 @@ impl Params {
                 password: password.unwrap().clone(),
             })
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::Params;
+
+    #[test]
+    fn parse_good_args() {
+        let args: Vec<String> = vec![
+            "program".to_string(),
+            "-f".to_string(), "file".to_string(),
+            "-p".to_string(), "pass".to_string(),
+        ];
+        assert_eq!(
+            Params {
+                encrypted_file: String::from("file"),
+                password: String::from("pass"),
+            },
+            Params::new(args.into_iter()).unwrap()
+        )
     }
 }
