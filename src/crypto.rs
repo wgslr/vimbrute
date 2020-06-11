@@ -1,17 +1,11 @@
-//! Code based on MIT-licensed
-//! https://github.com/SirVer/vimdecrypt-rs/blob/master/src/lib.rs
+//! Code based on MIT-licensed vimdecrypt-rs:
+//! <https://github.com/SirVer/vimdecrypt-rs/blob/master/src/lib.rs>
 
-use failure::Fail;
 use generic_array::GenericArray;
 use sha2;
 use sha2::Digest;
-use std::error;
-use std::fs;
 
 use blowfish::block_cipher::{BlockCipher, NewBlockCipher};
-use std::fmt;
-
-use super::Result;
 
 type BlowfishBE = blowfish::Blowfish<byteorder::BigEndian>;
 
@@ -26,11 +20,11 @@ type BlowfishBE = blowfish::Blowfish<byteorder::BigEndian>;
 ///     0x17, 0x0c, 0x42, 0xae, 0x39, 0x70, 0x93, 0xab, 0xa3, 0xc9, 0x32
 /// ];
 /// assert_eq!(
-///     vimcrypto::crypto::blowfish2_decrypt(&data, "123").unwrap(),
+///     vimcrypto::crypto::blowfish2_decrypt(&data, "123"),
 ///     b"short\n"
 /// );
 /// ```
-pub fn blowfish2_decrypt(all_data: &[u8], password: &str) -> Result<Vec<u8>> {
+pub fn blowfish2_decrypt(all_data: &[u8], password: &str) -> Vec<u8> {
     let salt = &all_data[0..8];
     let mut iv = all_data[8..16].to_vec();
     let data = all_data[16..].to_vec();
@@ -50,7 +44,7 @@ pub fn blowfish2_decrypt(all_data: &[u8], password: &str) -> Result<Vec<u8>> {
         }
         plaintext.push(xor[o % 8] ^ data[o]);
     }
-    Ok(plaintext)
+    plaintext
 }
 
 fn sha256(password: &[u8], salt: &[u8]) -> Vec<u8> {
