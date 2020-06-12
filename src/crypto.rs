@@ -49,9 +49,10 @@ pub fn blowfish2_decrypt(all_data: &[u8], password: &str) -> Vec<u8> {
 
 fn sha256(password: &[u8], salt: &[u8]) -> Vec<u8> {
     let mut hasher = sha2::Sha256::default();
-    hasher.input(password);
-    hasher.input(salt);
-    hasher.result().to_vec()
+
+    hasher.update(password);
+    hasher.update(salt);
+    hasher.finalize().to_vec()
 }
 
 fn hashpw(password: &str, salt: &[u8]) -> Vec<u8> {
