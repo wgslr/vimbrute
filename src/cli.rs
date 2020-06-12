@@ -5,7 +5,7 @@ use structopt::StructOpt;
 #[structopt(name = "basic")]
 pub struct Params {
     #[structopt(short, long)]
-    file: PathBuf,
+    pub file: PathBuf,
 }
 
 #[cfg(test)]
