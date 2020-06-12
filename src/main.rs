@@ -5,7 +5,7 @@ use vimcrypto::cli;
 
 fn main() {
     let opts = cli::Params::from_args();
-    match vimcrypto::run(opts) {
+    match vimcrypto::run_threaded(opts) {
         Ok(0) => {
             eprintln!("0 tried passwords yielded valid utf-8",);
             process::exit(1);

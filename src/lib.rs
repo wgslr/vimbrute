@@ -7,6 +7,8 @@ use std::fs;
 use std::io;
 use std::io::BufRead;
 use std::string;
+use std::sync;
+use threadpool::ThreadPool;
 
 extern crate test;
 
@@ -63,6 +65,45 @@ pub fn run(params: cli::Params) -> Result<i32> {
     }
 
     Ok(matches)
+}
+
+pub fn run_threaded(params: cli::Params) -> Result<i32> {
+    let pool = ThreadPool::new(params.threads as usize);
+
+    let file_data = fs::read(&params.file)?;
+    let header = &file_data[0..12];
+
+    match header {
+        b"VimCrypt~03!" => (),
+        _ => {
+            eprintln!("Provided file does not contain data encrypted using VimCrypt03 method.");
+            return Err(BadInputFile.into());
+        }
+    }
+
+    let data: Vec<u8> = file_data[12..].to_vec();
+    let encrypted_data: sync::Arc<Vec<u8>> = sync::Arc::new(data);
+
+    let mut counter = 0;
+    for line in io::stdin().lock().lines() {
+        match line {
+            Ok(password) => {
+                let pointer = sync::Arc::clone(&encrypted_data);
+                pool.execute(move || {
+                    if attempt_decrypt(&pointer, &password) {
+                        println!("{}", &password)
+                    }
+                })
+            }
+            Err(_) => break,
+        }
+        counter += 1;
+        if counter % 1000 == 0 {
+            eprintln!("Tried {} passwords", counter)
+        }
+    }
+    pool.join();
+    Ok(1)
 }
 
 // Tries to decrypt the file using given password.
