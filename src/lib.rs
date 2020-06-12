@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::error;
 use std::fmt;
 use std::fs;
@@ -9,6 +10,8 @@ pub mod cli;
 pub mod crypto;
 
 pub type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
+
+const PEEK_SIZE: usize = 256;
 
 #[derive(Debug, Clone)]
 struct BadInputFile;
@@ -45,7 +48,7 @@ pub fn run(params: cli::Params) -> Result<()> {
             Err(_) => break,
         }
         counter += 1;
-        if counter % 10 == 0 {
+        if counter % 1000 == 0 {
             eprintln!("Tried {} passwords", counter)
         }
     }
@@ -57,7 +60,10 @@ pub fn run(params: cli::Params) -> Result<()> {
 // If the obtained plaintext is valid UTF8, the operation
 // is considered succesful.
 fn attempt_decrypt(encrypted_data: &[u8], password: &str) -> bool {
-    let result = crypto::blowfish2_decrypt(&encrypted_data, password);
+    let result = crypto::blowfish2_decrypt(
+        &encrypted_data[0..PEEK_SIZE.min(encrypted_data.len())],
+        password,
+    );
     match String::from_utf8(result) {
         Ok(_) => true,
         Err(string::FromUtf8Error { .. }) => false,

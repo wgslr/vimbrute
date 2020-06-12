@@ -11,7 +11,7 @@ type BlowfishBE = blowfish::Blowfish<byteorder::BigEndian>;
 
 /// # Arguments
 ///
-/// - `all_data` - encrypted data, without vim's encryption type marker
+/// - `all_data` - encrypted data, without vim's encryption type marker.
 ///
 /// # Examples
 /// ```
