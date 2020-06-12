@@ -34,6 +34,7 @@ pub fn run(params: cli::Params) -> Result<()> {
         }
     }
 
+    let mut counter = 0;
     for line in io::stdin().lock().lines() {
         match line {
             Ok(password) => {
@@ -41,7 +42,11 @@ pub fn run(params: cli::Params) -> Result<()> {
                     println!("{}", &password)
                 }
             }
-            Err(_) => break
+            Err(_) => break,
+        }
+        counter += 1;
+        if counter % 10 == 0 {
+            eprintln!("Tried {} passwords", counter)
         }
     }
 
