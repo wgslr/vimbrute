@@ -73,7 +73,9 @@ fn wordswap(a: &mut [u8]) {
 
 #[cfg(test)]
 mod test {
+
     use super::*;
+    use ::test::Bencher;
 
     #[test]
     fn decrypt() {

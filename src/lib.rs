@@ -1,3 +1,5 @@
+#![feature(test)]
+
 use std::cmp::min;
 use std::error;
 use std::fmt;
@@ -5,6 +7,8 @@ use std::fs;
 use std::io;
 use std::io::BufRead;
 use std::string;
+
+extern crate test;
 
 pub mod cli;
 pub mod crypto;
