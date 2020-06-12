@@ -98,4 +98,11 @@ mod test {
             ]
         )
     }
+
+    #[bench]
+    fn hashpw_bench(bench: &mut Bencher) {
+        let pass = "some password";
+        let salt: [u8; 8] = [0x19, 0xd3, 0x58, 0x69, 0x58, 0x0b, 0x69, 0xf2];
+        bench.iter(|| hashpw(pass, &salt))
+    }
 }
