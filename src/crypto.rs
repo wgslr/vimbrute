@@ -69,3 +69,30 @@ fn wordswap(a: &mut [u8]) {
     a.swap(4, 7);
     a.swap(5, 6);
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn decrypt() {
+        let data = [
+            0x79, 0x1d, 0x67, 0xb8, 0x3b, 0xfd, 0x7a, 0x1e, 0x68, 0xcb, 0xab, 0x17, 0x0c, 0x42,
+            0xae, 0x39, 0x70, 0x93, 0xab, 0xa3, 0xc9, 0x32,
+        ];
+        assert_eq!(blowfish2_decrypt(&data, "123"), b"short\n");
+    }
+
+    #[test]
+    fn hash_password() {
+        let pass = "some password";
+        let salt: [u8; 8] = [0x19, 0xd3, 0x58, 0x69, 0x58, 0x0b, 0x69, 0xf2];
+        assert_eq!(
+            hashpw(pass, &salt),
+            vec![
+                251, 147, 248, 207, 215, 71, 122, 234, 26, 248, 78, 67, 69, 220, 104, 43, 155, 33,
+                141, 161, 137, 165, 99, 240, 38, 88, 15, 103, 212, 80, 176, 153
+            ]
+        )
+    }
+}
