@@ -54,15 +54,10 @@ fn sha256(password: &[u8], salt: &[u8]) -> Vec<u8> {
     hasher.result().to_vec()
 }
 
-fn to_hex_string(bytes: &[u8]) -> String {
-    let strs: Vec<String> = bytes.iter().map(|b| format!("{:02x}", b)).collect();
-    strs.join("")
-}
-
 fn hashpw(password: &str, salt: &[u8]) -> Vec<u8> {
     let mut key = sha256(password.as_bytes(), salt);
     for _ in 0..1000 {
-        key = sha256(to_hex_string(&key).as_bytes(), salt);
+        key = sha256(hex::encode(&key).as_bytes(), salt);
     }
     key
 }
