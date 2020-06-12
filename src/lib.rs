@@ -94,7 +94,8 @@ pub fn run_threaded(params: cli::Params) -> Result<i32> {
         let pointer = Arc::clone(&encrypted_data);
         let receiver_pointer = Arc::clone(&receiver_mutex);
         pool.execute(move || loop {
-            match receiver_pointer.lock().unwrap().recv().unwrap() {
+            let message = receiver_pointer.lock().unwrap().recv().unwrap();
+            match message {
                 Message::Job(password) => {
                     if attempt_decrypt(&pointer, &password) {
                         println!("{}", &password)
