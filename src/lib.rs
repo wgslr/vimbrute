@@ -7,7 +7,7 @@ use std::fs;
 use std::io;
 use std::io::BufRead;
 use std::string;
-use std::sync::{self, mpsc, Arc};
+use std::sync::{self, mpsc, Arc, Mutex};
 use threadpool::ThreadPool;
 
 extern crate test;
@@ -72,7 +72,11 @@ enum Message {
     Quit,
 }
 
-pub fn run_threaded(params: cli::Params) -> Result<i32> {
+enum FeedbackMessage {
+    Success, // a password matched
+}
+
+pub fn run_threaded(params: cli::Params) -> Result<u32> {
     let pool = ThreadPool::new(params.threads as usize);
 
     let file_data = fs::read(&params.file)?;
@@ -88,17 +92,20 @@ pub fn run_threaded(params: cli::Params) -> Result<i32> {
 
     let encrypted_data: sync::Arc<Vec<u8>> = sync::Arc::new(file_data[12..].to_vec());
     let (sender, receiver) = mpsc::sync_channel((params.threads * 2) as usize);
-    let receiver_mutex = Arc::new(sync::Mutex::new(receiver));
+    let receiver_mutex = Arc::new(Mutex::new(receiver));
+    let success_counter = Arc::new(Mutex::new(0));
 
     for _ in 0..params.threads {
         let pointer = Arc::clone(&encrypted_data);
         let receiver_pointer = Arc::clone(&receiver_mutex);
+        let counter = Arc::clone(&success_counter);
         pool.execute(move || loop {
             let message = receiver_pointer.lock().unwrap().recv().unwrap();
             match message {
                 Message::Job(password) => {
                     if attempt_decrypt(&pointer, &password) {
-                        println!("{}", &password)
+                        *counter.lock().unwrap() += 1;
+                        println!("{}", &password);
                     }
                 }
                 Message::Quit => break,
@@ -119,13 +126,13 @@ pub fn run_threaded(params: cli::Params) -> Result<i32> {
             eprintln!("Tried {} passwords", counter)
         }
     }
-    eprintln!("All lines",);
-    for i in 0..params.threads {
-        eprintln!("Send Quit to thread {}", i);
+    for _ in 0..params.threads {
         sender.send(Message::Quit).unwrap();
     }
     pool.join();
-    Ok(1)
+
+    let successes = success_counter.try_lock().unwrap().clone();
+    Ok(successes)
 }
 
 // Tries to decrypt the file using given password.
