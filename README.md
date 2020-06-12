@@ -10,6 +10,8 @@ The crate currently is not hosted on crates.io. To install by building locally, 
 rustup run nightly cargo install --git https://github.com/wgslr/vimbrute.git --branch=stable vimbrute
 ```
 
+or download a x64 Linux binary from [releases page](https://github.com/wgslr/vimbrute/releases).
+
 # Usage
 
 ```bash
