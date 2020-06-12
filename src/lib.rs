@@ -7,7 +7,7 @@ use std::fs;
 use std::io;
 use std::io::BufRead;
 use std::string;
-use std::sync;
+use std::sync::{self, mpsc, Arc};
 use threadpool::ThreadPool;
 
 extern crate test;
@@ -67,6 +67,11 @@ pub fn run(params: cli::Params) -> Result<i32> {
     Ok(matches)
 }
 
+enum Message {
+    Job(String),
+    Quit,
+}
+
 pub fn run_threaded(params: cli::Params) -> Result<i32> {
     let pool = ThreadPool::new(params.threads as usize);
 
@@ -81,19 +86,30 @@ pub fn run_threaded(params: cli::Params) -> Result<i32> {
         }
     }
 
-    let data: Vec<u8> = file_data[12..].to_vec();
-    let encrypted_data: sync::Arc<Vec<u8>> = sync::Arc::new(data);
+    let encrypted_data: sync::Arc<Vec<u8>> = sync::Arc::new(file_data[12..].to_vec());
+    let (sender, receiver) = mpsc::sync_channel((params.threads * 2) as usize);
+    let receiver_mutex = Arc::new(sync::Mutex::new(receiver));
+
+    for _ in 0..params.threads {
+        let pointer = Arc::clone(&encrypted_data);
+        let receiver_pointer = Arc::clone(&receiver_mutex);
+        pool.execute(move || loop {
+            match receiver_pointer.lock().unwrap().recv().unwrap() {
+                Message::Job(password) => {
+                    if attempt_decrypt(&pointer, &password) {
+                        println!("{}", &password)
+                    }
+                }
+                Message::Quit => break,
+            }
+        })
+    }
 
     let mut counter = 0;
     for line in io::stdin().lock().lines() {
         match line {
             Ok(password) => {
-                let pointer = sync::Arc::clone(&encrypted_data);
-                pool.execute(move || {
-                    if attempt_decrypt(&pointer, &password) {
-                        println!("{}", &password)
-                    }
-                })
+                sender.send(Message::Job(password)).unwrap();
             }
             Err(_) => break,
         }
@@ -101,6 +117,11 @@ pub fn run_threaded(params: cli::Params) -> Result<i32> {
         if counter % 1000 == 0 {
             eprintln!("Tried {} passwords", counter)
         }
+    }
+    eprintln!("All lines",);
+    for i in 0..params.threads {
+        eprintln!("Send Quit to thread {}", i);
+        sender.send(Message::Quit).unwrap();
     }
     pool.join();
     Ok(1)
