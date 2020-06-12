@@ -64,7 +64,7 @@ fn hashpw(password: &str, salt: &[u8]) -> Vec<u8> {
 }
 
 fn wordswap(a: &mut [u8]) {
-    assert_eq!(a.len(), 8);
+    debug_assert_eq!(a.len(), 8);
     a.swap(0, 3);
     a.swap(1, 2);
     a.swap(4, 7);
