@@ -1,5 +1,5 @@
 [package]
-name = "vimcrypto"
+name = "vimbrute"
 version = "0.1.0"
 authors = ["Wojciech Geisler <wojciech.geisler@gmail.com>"]
 edition = "2018"

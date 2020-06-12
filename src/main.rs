@@ -1,11 +1,11 @@
 use std::process;
 
 use structopt::StructOpt;
-use vimcrypto::cli;
+use vimbrute::cli;
 
 fn main() {
     let opts = cli::Params::from_args();
-    match vimcrypto::run_threaded(opts) {
+    match vimbrute::run_threaded(opts) {
         Ok(0) => {
             eprintln!("0 tried passwords yielded valid utf-8",);
             process::exit(1);

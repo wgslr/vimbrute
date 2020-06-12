@@ -20,7 +20,7 @@ type BlowfishBE = blowfish::Blowfish<byteorder::BigEndian>;
 ///     0x17, 0x0c, 0x42, 0xae, 0x39, 0x70, 0x93, 0xab, 0xa3, 0xc9, 0x32
 /// ];
 /// assert_eq!(
-///     vimcrypto::crypto::blowfish2_decrypt(&data, "123"),
+///     vimbrute::crypto::blowfish2_decrypt(&data, "123"),
 ///     b"short\n"
 /// );
 /// ```

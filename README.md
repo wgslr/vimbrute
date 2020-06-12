@@ -5,7 +5,7 @@ Requires rust nightly.
 # Usage
 
 ```bash
-vimcrypto -f encrypted_file -t4 < passwords_dictionary | tee promising_passwords
+vimbrute -f encrypted_file -t4 < passwords_dictionary | tee promising_passwords
 ```
 
 Reads standard input for passwords to try, assuming one password per line. A password is deemed valid if decryption of the first 256 bytes of FILE produces a valid utf8 string (ignoring possible trailing split character). Such passowords are printed on the stdout. The program quits when stdin stream ends, NOT after finding first match.
