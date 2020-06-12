@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug, PartialEq)]
-#[structopt(name = "basic")]
+#[structopt()]
 pub struct Params {
     #[structopt(short, long)]
     pub file: PathBuf,
