@@ -47,6 +47,13 @@ pub fn blowfish2_decrypt(all_data: &[u8], password: &str) -> Vec<u8> {
     plaintext
 }
 
+pub fn is_utf8_prefix(data: &[u8]) -> bool {
+    let s = String::from_utf8_lossy(data);
+    // allow mid-character break at the end of the data
+    let without_ending_split = s.strip_suffix('\u{fffd}').unwrap_or(&s); // fffd is the unknown codepoint character
+    !without_ending_split.contains('\u{fffd}')
+}
+
 fn sha256(password: &[u8], salt: &[u8]) -> Vec<u8> {
     let mut hasher = sha2::Sha256::default();
 
@@ -97,6 +104,18 @@ mod test {
                 141, 161, 137, 165, 99, 240, 38, 88, 15, 103, 212, 80, 176, 153
             ]
         )
+    }
+
+    #[test]
+    fn utf8_detection() {
+        let bytes = "żołć".as_bytes();
+        assert_eq!(true, is_utf8_prefix(&bytes));
+        assert_eq!(true, is_utf8_prefix(&bytes[..bytes.len() - 1]));
+        // 0xF0 should begin 4-byte character
+        assert_eq!(
+            false,
+            is_utf8_prefix(&[0xF0, 0xbc, 0xc3, 0xb3, 0xc5, 0x82, 0xc4, 0x87])
+        );
     }
 
     #[bench]

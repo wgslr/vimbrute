@@ -136,8 +136,5 @@ fn attempt_decrypt(encrypted_data: &[u8], password: &str) -> bool {
         &encrypted_data[0..PEEK_SIZE.min(encrypted_data.len())],
         password,
     );
-    match String::from_utf8(result) {
-        Ok(_) => true,
-        Err(string::FromUtf8Error { .. }) => false,
-    }
+    crypto::is_utf8_prefix(&result)
 }
