@@ -24,7 +24,10 @@ impl fmt::Display for BadInputFile {
 
 impl error::Error for BadInputFile {}
 
-pub fn run(params: cli::Params) -> Result<()> {
+/// # Returns
+/// - Ok: number of matches
+/// - Err: error
+pub fn run(params: cli::Params) -> Result<i32> {
     let file_data = fs::read(&params.file)?;
     let header = &file_data[0..12];
     let encrypted_data = &file_data[12..];
@@ -38,10 +41,12 @@ pub fn run(params: cli::Params) -> Result<()> {
     }
 
     let mut counter = 0;
+    let mut matches = 0;
     for line in io::stdin().lock().lines() {
         match line {
             Ok(password) => {
                 if attempt_decrypt(&encrypted_data, &password) {
+                    matches += 1;
                     println!("{}", &password)
                 }
             }
@@ -53,7 +58,7 @@ pub fn run(params: cli::Params) -> Result<()> {
         }
     }
 
-    Ok(())
+    Ok(matches)
 }
 
 // Tries to decrypt the file using given password.
