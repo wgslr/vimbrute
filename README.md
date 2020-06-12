@@ -2,6 +2,14 @@ This crate is a tool for multi-threaded brute forcing passwords of a file encryp
 
 Requires rust nightly.
 
+# Installation
+
+The crate currently is not hosted on crates.io. To install by building locally, run
+
+```bash
+rustup run nightly cargo install --git https://github.com/wgslr/vimbrute.git --branch=stable vimbrute
+```
+
 # Usage
 
 ```bash
